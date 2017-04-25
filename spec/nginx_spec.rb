@@ -66,12 +66,16 @@ RSpec.describe "nginx-ingress" do
     end
 
     it 'has a reachable app-a' do
-      uri = URI("http://app-a-stage.#{service_ip}.xip.io/")
-      expect(Net::HTTP.get(uri)).to match(/Hello world from K8S!/)
+      expect(http_get("http://app-a-stage.#{service_ip}.xip.io/").body).to match(/Hello world from K8S!/)
     end
 
     it 'has a staging certificate' do
-      puts https_get_certifiate("https://app-a-stage.#{service_ip}.xip.io/")
+      resp = https_get_certifiate("https://app-a-stage.#{service_ip}.xip.io/")
+      expect(resp[1]).to eq(:staging)
+      expect(resp[3]).to match_array([
+        "app-a-stage.#{service_ip}.xip.io",
+        "app-a.#{service_ip}.xip.io"
+      ])
     end
   end
 
