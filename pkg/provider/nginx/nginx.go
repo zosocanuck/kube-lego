@@ -5,9 +5,10 @@ import (
 	"github.com/jetstack/kube-lego/pkg/kubelego_const"
 	"github.com/jetstack/kube-lego/pkg/service"
 
+	"sort"
+
 	"github.com/Sirupsen/logrus"
 	k8sExtensions "k8s.io/client-go/pkg/apis/extensions/v1beta1"
-	"sort"
 )
 
 var _ kubelego.IngressProvider = &Nginx{}
@@ -120,6 +121,7 @@ func (p *Nginx) updateIngress() error {
 		kubelego.AnnotationIngressChallengeEndpoints: "true",
 		kubelego.AnnotationSslRedirect:               "false",
 		kubelego.AnnotationIngressClass:              p.kubelego.LegoDefaultIngressClass(),
+		kubelego.AnnotationIngressProvider:           p.kubelego.LegoDefaultIngressProvider(),
 	}
 
 	ing.Spec = k8sExtensions.IngressSpec{

@@ -14,10 +14,10 @@ import (
 
 	"github.com/jetstack/kube-lego/pkg/acme"
 	"github.com/jetstack/kube-lego/pkg/ingress"
+	kubelego "github.com/jetstack/kube-lego/pkg/kubelego_const"
 	"github.com/jetstack/kube-lego/pkg/provider/gce"
 	"github.com/jetstack/kube-lego/pkg/provider/nginx"
 	"github.com/jetstack/kube-lego/pkg/secret"
-	kubelego "github.com/movio/kube-lego/pkg/kubelego_const"
 
 	log "github.com/Sirupsen/logrus"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -90,10 +90,19 @@ func (kl *KubeLego) Init() {
 		kl.Log().Fatal(err)
 	}
 
-	// initialising ingress providers
-	kl.legoIngressProvider = map[string]kubelego.IngressProvider{
-		"gce":   gce.New(kl),
-		"nginx": nginx.New(kl),
+	kl.legoIngressProvider = map[string]kubelego.IngressProvider{}
+	for _, provider := range kl.legoSupportedIngressProvider {
+		switch provider {
+		case "gce":
+			kl.legoIngressProvider["gce"] = gce.New(kl)
+			break
+		case "nginx":
+			kl.legoIngressProvider["nginx"] = nginx.New(kl)
+			break
+		default:
+			kl.Log().Warnf("Unsupported provider [%s], please add a handler in kubelego.go#Init()", provider)
+			break
+		}
 	}
 
 	// start workers
@@ -173,11 +182,19 @@ func (kl *KubeLego) LegoDefaultIngressClass() string {
 	return kl.legoDefaultIngressClass
 }
 
+func (kl *KubeLego) LegoDefaultIngressProvider() string {
+	return kl.legoDefaultIngressProvider
+}
+
 func (kl *KubeLego) LegoIngressNameNginx() string {
 	return kl.legoIngressNameNginx
 }
 func (kl *KubeLego) LegoSupportedIngressClass() []string {
 	return kl.legoSupportedIngressClass
+}
+
+func (kl *KubeLego) LegoSupportedIngressProvider() []string {
+	return kl.legoSupportedIngressProvider
 }
 
 func (kl *KubeLego) LegoServiceNameNginx() string {
@@ -257,6 +274,24 @@ func (kl *KubeLego) paramsLego() error {
 	kl.legoServiceNameGce = os.Getenv("LEGO_SERVICE_NAME_GCE")
 	if len(kl.legoServiceNameGce) == 0 {
 		kl.legoServiceNameGce = "kube-lego-gce"
+	}
+
+	supportedProviders := os.Getenv("LEGO_SUPPORTED_INGRESS_PROVIDER")
+	if len(supportedProviders) == 0 {
+		kl.legoSupportedIngressProvider = kubelego.SupportedIngressProviders
+	} else {
+		kl.legoSupportedIngressProvider = strings.Split(supportedProviders, ",")
+	}
+
+	legoDefaultIngressProvider := os.Getenv("LEGO_DEFAULT_INGRESS_PROVIDER")
+	if len(legoDefaultIngressProvider) == 0 {
+		kl.legoDefaultIngressProvider = "nginx"
+	} else {
+		var err error = nil
+		kl.legoDefaultIngressProvider, err = ingress.IsSupportedIngressProvider(kl.legoSupportedIngressProvider, legoDefaultIngressProvider)
+		if err != nil {
+			return fmt.Errorf("Unsupported default ingress provider: '%s'. You can set the ingress provider with 'LEGO_DEFAULT_INGRESS_PROVIDER'", legoDefaultIngressProvider)
+		}
 	}
 
 	kl.legoSupportedIngressClass = strings.Split(os.Getenv("LEGO_SUPPORTED_INGRESS_CLASS"), ",")
