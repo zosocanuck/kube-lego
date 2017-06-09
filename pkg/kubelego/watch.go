@@ -81,7 +81,14 @@ func (kl *KubeLego) WatchEvents() {
 			kl.workQueue.Add(true)
 		},
 		UpdateFunc: func(old, cur interface{}) {
-			if !reflect.DeepEqual(old, cur) {
+			oldIng := old.(*k8sExtensions.Ingress)
+			upIng := cur.(*k8sExtensions.Ingress)
+
+			//ignore resource version in equality check
+			oldIng.ResourceVersion = ""
+			upIng.ResourceVersion = ""
+
+			if !reflect.DeepEqual(oldIng, upIng) {
 				upIng := cur.(*k8sExtensions.Ingress)
 				if ingress.IgnoreIngress(upIng) != nil {
 					return
