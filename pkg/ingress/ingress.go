@@ -59,7 +59,7 @@ func New(client kubelego.KubeLego, namespace string, name string) *Ingress {
 			ingress.exists = false
 
 		} else {
-			client.Log().Warn("Error while getting secret: ", err)
+			client.Log().Warn("Error while getting ingress: ", err)
 		}
 	}
 
