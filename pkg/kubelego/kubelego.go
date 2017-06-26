@@ -28,6 +28,20 @@ import (
 var _ kubelego.KubeLego = &KubeLego{}
 
 func makeLog() *log.Entry {
+	logtype := strings.ToLower(os.Getenv("LEGO_LOG_TYPE"))
+	if logtype == "" {
+		logtype = "text"
+	}
+
+	if logtype == "json" {
+		log.SetFormatter(&log.JSONFormatter{})
+	} else if logtype == "text" {
+		log.SetFormatter(&log.TextFormatter{})
+	} else {
+		log.WithField("logtype", logtype).Fatal("Given logtype was not valid, check LEGO_LOG_TYPE configuration")
+		os.Exit(1)
+	}
+
 	loglevel := strings.ToLower(os.Getenv("LEGO_LOG_LEVEL"))
 	if len(loglevel) == 0 {
 		log.SetLevel(log.InfoLevel)
