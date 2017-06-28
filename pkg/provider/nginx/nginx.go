@@ -122,6 +122,7 @@ func (p *Nginx) updateIngress() error {
 		kubelego.AnnotationSslRedirect:               "false",
 		kubelego.AnnotationIngressClass:              p.kubelego.LegoDefaultIngressClass(),
 		kubelego.AnnotationIngressProvider:           p.kubelego.LegoDefaultIngressProvider(),
+		kubelego.AnnotationWhitelistSourceRange:      "0.0.0.0/0",
 	}
 
 	ing.Spec = k8sExtensions.IngressSpec{
