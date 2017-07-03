@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.1.5] - 2017-07-03
 
-### Fixed
+### Fixed
 
 - Fix infinite update loop on ingress changes [#204](https://github.com/jetstack/kube-lego/pull/204)
 - Fix error message wording [#209](https://github.com/jetstack/kube-lego/pull/209)
