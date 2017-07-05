@@ -175,7 +175,9 @@ func (i *Ingress) IngressClass() string {
 func (i *Ingress) IngressProvider() string {
 	val, ok := i.IngressApi.Annotations[kubelego.AnnotationIngressProvider]
 	if !ok {
-		return i.kubelego.LegoDefaultIngressProvider()
+		// we return IngressClass() here in order to not break backwards
+		// compatibility with older versions of kube-lego
+		return i.IngressClass()
 	}
 	return strings.ToLower(val)
 }
