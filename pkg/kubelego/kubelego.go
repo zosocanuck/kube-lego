@@ -293,9 +293,11 @@ func (kl *KubeLego) paramsLego() error {
 		kl.legoSupportedIngressProvider = strings.Split(supportedProviders, ",")
 	}
 
-	kl.legoSupportedIngressClass = strings.Split(os.Getenv("LEGO_SUPPORTED_INGRESS_CLASS"), ",")
-	if len(kl.legoSupportedIngressClass) == 0 {
+	legoSupportedIngressClass := os.Getenv("LEGO_SUPPORTED_INGRESS_CLASS")
+	if len(legoSupportedIngressClass) == 0 {
 		kl.legoSupportedIngressClass = kubelego.SupportedIngressClasses
+	} else {
+		kl.legoSupportedIngressClass = strings.Split(legoSupportedIngressClass, ",")
 	}
 
 	legoDefaultIngressClass := os.Getenv("LEGO_DEFAULT_INGRESS_CLASS")
