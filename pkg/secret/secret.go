@@ -7,13 +7,53 @@ import (
 	"time"
 
 	"github.com/jetstack/kube-lego/pkg/kubelego_const"
+	"github.com/jetstack/kube-lego/pkg/utils"
 
 	"github.com/Sirupsen/logrus"
 	k8sErrors "k8s.io/apimachinery/pkg/api/errors"
 	k8sMeta "k8s.io/apimachinery/pkg/apis/meta/v1"
+	k8sLabels "k8s.io/apimachinery/pkg/labels"
+	k8sSelection "k8s.io/apimachinery/pkg/selection"
 	k8sApiTyped "k8s.io/client-go/kubernetes/typed/core/v1"
 	k8sApi "k8s.io/client-go/pkg/api/v1"
 )
+
+// List will lookup Secret resources in the cluster set in client.KubeClient(),
+// in the namespace provided and matching the given labels. If no secrets exist
+func List(client kubelego.KubeLego, namespace string, labels map[string]string) ([]*Secret, error) {
+	var err error
+	selector := k8sLabels.NewSelector()
+	for key, val := range labels {
+		req, err := k8sLabels.NewRequirement(key, k8sSelection.Equals, []string{val})
+		if err != nil {
+			return nil, fmt.Errorf("error creating label requirement: %s", err.Error())
+		}
+		selector = selector.Add(*req)
+	}
+	secrets, err := client.KubeClient().Secrets(namespace).List(k8sMeta.ListOptions{
+		LabelSelector: selector.String(),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error listing secrets: %s", err.Error())
+	}
+	// no secrets exist matching the selector, so create a new one
+	if len(secrets.Items) == 0 {
+		// todo (@munnerz): ensure that the token name generated does not already exist
+		return []*Secret{New(client, namespace, fmt.Sprintf("kube-lego-%s", utils.RandomToken(6)))}, nil
+	}
+	s := make([]*Secret, len(secrets.Items))
+	for i, secret := range secrets.Items {
+		s[i] = &Secret{
+			// todo (@munnerz): perform a deep copy of the secret instead of referencing it.
+			// when we switch to a shared informer for these objects, this will cause havoc
+			// on the cache
+			SecretApi: &secret,
+			exists:    true,
+			kubelego:  client,
+		}
+	}
+	return s, nil
+}
 
 func New(client kubelego.KubeLego, namespace string, name string) *Secret {
 	secret := &Secret{
