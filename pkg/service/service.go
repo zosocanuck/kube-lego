@@ -103,7 +103,7 @@ func (s *Service) SetKubeLegoSpec() {
 	}
 
 	svc.Spec.Selector = map[string]string{
-		"app": "kube-lego",
+		"app": kubelego.LegoServiceSelector,
 	}
 
 	if len(svc.Spec.Ports) != 1 ||

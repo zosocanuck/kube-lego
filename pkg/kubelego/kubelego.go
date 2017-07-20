@@ -370,6 +370,11 @@ func (kl *KubeLego) paramsLego() error {
 		kubelego.AnnotationEnabled = annotationEnabled
 	}
 
+	svcSelector := os.Getenv("LEGO_SERVICE_SELECTOR")
+	if len(svcSelector) != 0 {
+		kubelego.LegoServiceSelector = svcSelector
+	}
+
 	watchNamespace := os.Getenv("LEGO_WATCH_NAMESPACE")
 	if len(watchNamespace) == 0 {
 		kl.legoWatchNamespace = k8sApi.NamespaceAll
