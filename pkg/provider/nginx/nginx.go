@@ -124,7 +124,7 @@ func (p *Nginx) updateIngress() error {
 		// requesting a certificate for
 		kubelego.AnnotationIngressClass:         p.kubelego.LegoDefaultIngressClass(),
 		kubelego.AnnotationIngressProvider:      "nginx",
-		kubelego.AnnotationWhitelistSourceRange: "0.0.0.0/0",
+		kubelego.AnnotationWhitelistSourceRange: "0.0.0.0/0,::/0",
 	}
 
 	ing.Spec = k8sExtensions.IngressSpec{
