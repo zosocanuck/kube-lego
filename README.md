@@ -103,6 +103,7 @@ Please note:
 | `LEGO_NAMESPACE` | n | `default` | Namespace where kube-lego is running in |
 | `LEGO_URL` | n | `https://acme-staging.api.letsencrypt.org/directory` | URL for the ACME server. To get "real" certificates set to the production API of Let's Encrypt: `https://acme-v01.api.letsencrypt.org/directory` |
 | `LEGO_SECRET_NAME` | n | `kube-lego-account` | Name of the secret in the same namespace that contains ACME account secret |
+| `LEGO_SERVICE_SELECTOR` | n | `kube-lego` | Set the service selector to the the kube-lego pod |
 | `LEGO_SERVICE_NAME_NGINX` | n | `kube-lego-nginx` | Service name for NGINX ingress |
 | `LEGO_SERVICE_NAME_GCE` | n | `kube-lego-gce` | Service name for GCE ingress |
 | `LEGO_SUPPORTED_INGRESS_CLASS` | n | `nginx,gce` | Specify the supported ingress class |
@@ -149,7 +150,7 @@ Capture 20 seconds of the execution trace:
 
 `$ wget http://localhost:8080/debug/pprof/trace?seconds=20 -O kube-lego.trace`
 
-You can inspect the trace sample running 
+You can inspect the trace sample running
 
 `$ go tool trace kube-lego.trace`
 

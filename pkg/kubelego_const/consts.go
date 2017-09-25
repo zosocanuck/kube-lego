@@ -26,3 +26,4 @@ const AnnotationWhitelistSourceRange = "ingress.kubernetes.io/whitelist-source-r
 var SupportedIngressClasses = []string{"nginx", "gce"}
 var SupportedIngressProviders = []string{"nginx", "gce"}
 var AnnotationEnabled = "kubernetes.io/tls-acme"
+var LegoServiceSelector = "kube-lego"
