@@ -156,6 +156,6 @@ You can inspect the trace sample running
 
 
 ## Authors
-
+* Ivan Wallis
 * Christian Simon for [Jetstack Ltd](http://www.jetstack.io)
 * [PR contributors](https://github.com/jetstack/kube-lego/graphs/contributors)
