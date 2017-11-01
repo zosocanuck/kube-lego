@@ -3,6 +3,8 @@ FROM alpine:3.5
 # install ca certificates for comms with Let's Encrypt
 RUN apk --update add ca-certificates && rm -rf /var/cache/apk/*
 
+#test
+
 # add user / group
 RUN addgroup -g 1000 app && \
     adduser -G app -h /home/app -u 1000 -D app
