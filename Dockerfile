@@ -8,12 +8,12 @@ COPY certs/sub.crt /etc/ssl/certs/sub.crt
 COPY certs/root.crt /etc/ssl/certs/root.crt
 
 # add user / group
-RUN addgroup -g 1000 app && \
-    adduser -G app -h /home/app -u 1000 -D app
+#RUN addgroup -g 1000 app && \
+#    adduser -G app -h /home/app -u 1000 -D app
 
 # move to user / group
-USER app
-WORKDIR /home/app
+#USER app
+#WORKDIR /home/app
 
 COPY _build/kube-lego-linux-amd64 /kube-lego
 ENTRYPOINT ["/kube-lego"]
