@@ -50,7 +50,7 @@ def imageTags(){
 
 node('docker'){
     catchError {
-        def imageName = 'jetstack/kube-lego'
+        def imageName = 'zosocanuck/kube-lego'
         def imageTag = 'jenkins-build'
 
         jenkinsSlack('start')
@@ -99,5 +99,5 @@ node('docker'){
         }
     }
     jenkinsSlack('finish')
-    step([$class: 'Mailer', recipients: 'christian@jetstack.io', notifyEveryUnstableBuild: true])
+    step([$class: 'Mailer', recipients: 'iwallis@gmail.com', notifyEveryUnstableBuild: true])
 }
