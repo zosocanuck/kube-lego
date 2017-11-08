@@ -16,6 +16,7 @@ COPY certs/root.crt /etc/ssl/certs/root.crt
 #WORKDIR /home/app
 
 COPY _build/kube-lego-linux-amd64 /kube-lego
+RUN chmod 755 /kube-lego
 ENTRYPOINT ["/kube-lego"]
 ARG VCS_REF
 LABEL org.label-schema.vcs-ref=$VCS_REF \
